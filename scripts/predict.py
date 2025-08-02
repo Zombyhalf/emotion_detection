@@ -22,9 +22,6 @@ from scipy.spatial.distance import cdist
    - Результат: Улучшение согласованности предсказаний с train.py.
    - Вывод: Корректная предобработка критически важна (прирост точности с 26% до 52%).
 """
-# Диагностика
-print(f"TensorFlow version: {tf.__version__}")
-print(f"NumPy version: {np.__version__}")
 
 # Константы
 IMG_SIZE = (224, 224)
