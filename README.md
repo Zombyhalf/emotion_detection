@@ -25,7 +25,7 @@
 - Python 3.8–3.10
 - PyCharm Community Edition
 - Веб-камера (для прототипа)
-- ~2 ГБ места для датасетов
+- ~3 ГБ места для датасетов
 
 ## Установка
 
@@ -34,24 +34,23 @@
 pip install -r requirements.txt
 ```
 
-Скачайте датасеты:train.zip → data/train/
-test.zip → data/test/
-train.csv, sample_submission.csv с Kaggle → data/
+## Подготовка данных
+- **Датасет**: Скачайте датасет с [Kaggle/другой источник] и разместите:
+  - Тренировочные изображения в `data/train/`.
+  - Тестовые изображения в `data/test/`.
+  - `train.csv` в `data/` (формат: `image_path`, `emotion`).
+- **Модели**: Обучите модели с помощью `train.py`, чтобы сгенерировать:
+  - `models/resnet50.h5`
+  - `models/resnet50_finetuned.h5`
+  - `models/resnet50_valence_arousal.h5`
 
-ЗапускОбучение:
-```bash
-python scripts/train.py
-```
-Обучает ResNet50 с аугментацией и fine-tuning.
-Сохраняет модели в models/.
-
-Предсказания для Kaggle:
+## Предсказания для Kaggle:
 ```bash
 python scripts/predict.py
 ```
 Создаёт submission.csv в корне проекта.
 
-Прототип с веб-камерой:
+## Прототип с веб-камерой:
 ```bash
 python scripts/webcam.py
 ```
