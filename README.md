@@ -1,6 +1,6 @@
 # Проект распознавания эмоций
 
-Проект классифицирует 9 эмоций на изображениях лиц и включает прототип с веб-камерой. Цель: метрика > 0.29880 на Kaggle (public leaderboard) для "Зачёта" и > 0.4 (private) для высокой оценки.
+Проект классифицирует 9 эмоций на изображениях лиц и включает прототип с веб-камерой. Цель: метрика > 0.29880 на Kaggle (public leaderboard) для "Зачёта" и > 0.4 (private) для высокой оценки. Файлы для обучения по адресу https://www.kaggle.com/competitions/skillbox-computer-vision-project/overview 
 
 ## Структура проекта
 
@@ -28,32 +28,15 @@
 - ~2 ГБ места для датасетов
 
 ## Установка
-1. **Создайте виртуальное окружение**:
-```bash
-python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/macOS
-```
-Обновите pip:
-```bash
-pip install --upgrade pip
-```
+
 Установите зависимости:
 ```bash
 pip install -r requirements.txt
-```
-**Если нет GPU**:
-```bash
-pip install tensorflow-cpu==2.12.0
 ```
 
 Скачайте датасеты:train.zip → data/train/
 test.zip → data/test/
 train.csv, sample_submission.csv с Kaggle → data/
-
-Настройте PyCharm:File → New Project → Путь emotion_detection.
-Укажите интерпретатор: File → Settings → Project → Python Interpreter → Add Interpreter → venv\Scripts\python.exe (Windows) или venv/bin/python (Linux/macOS).
-Создайте папки data, models, scripts.
 
 ЗапускОбучение:
 ```bash
