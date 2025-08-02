@@ -5,21 +5,36 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from scipy.spatial.distance import cdist
+"""
+Предсказания для Kaggle
+Эксперименты:
+1. **Классификационная модель (resnet50_finetuned.h5)**:
+   - Результат: Точность на public leaderboard = 0.508.
+   - Вывод: Модель хорошо обобщает, подходит для Kaggle.
 
+2. **Valence-Arousal модель (resnet50_valence_arousal.h5)**:
+   - Маппинг через cdist.
+   - Результат: Точность на Kaggle ~0.168.
+   - Вывод: Классификационная модель предпочтительнее из-за более высокой точности.
+
+3. **Предобработка**:
+   - Замена деления на 255.0 на preprocess_input.
+   - Результат: Улучшение согласованности предсказаний с train.py.
+   - Вывод: Корректная предобработка критически важна (прирост точности с 26% до 52%).
+"""
 # Диагностика
 print(f"TensorFlow version: {tf.__version__}")
 print(f"NumPy version: {np.__version__}")
 
 # Константы
 IMG_SIZE = (224, 224)
-TEST_DIR = '/Users/connors/PycharmProjects/emotion_detection/data/test'
-MODEL_PATH = '/Users/connors/PycharmProjects/emotion_detection/models/resnet50_valence_arousal.h5'
+TEST_DIR = 'data/test'
+MODEL_PATH = '/models/YOUR_MODEL'
 CLASS_NAMES = ['neutral', 'anger', 'contempt', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'uncertain']
 VALENCE_AROUSAL = {
     'neutral': (0.0, 0.0), 'anger': (-0.7, 0.7), 'contempt': (-0.5, 0.3), 'disgust': (-0.6, 0.4), 'fear': (-0.4, 0.8),
     'happy': (0.7, 0.7), 'sad': (-0.7, -0.5), 'surprise': (0.3, 0.9), 'uncertain': (0.0, -0.2)
 }
-USE_TEST_PREFIX = False  # Установите True, если Kaggle ожидает image_path вида 'test/0.jpg'
 
 def generate_submission():
     try:
@@ -32,11 +47,11 @@ def generate_submission():
         print(f"Model type: {'Valence-Arousal' if is_valence_arousal else 'Classification'}")
 
         # Подготовка тестовых путей
-        test_image_paths = [f"test/{i}.jpg" if USE_TEST_PREFIX else f"{i}.jpg" for i in range(5000)]
+        test_image_paths = [f"{i}.jpg" for i in range(5000)]
         predictions = []
 
         for img_path in test_image_paths:
-            full_path = os.path.join(TEST_DIR, img_path.lstrip('test/'))  # Убираем 'test/' для локального пути
+            full_path = os.path.join(TEST_DIR, img_path.lstrip('test/'))  
             if not os.path.exists(full_path):
                 print(f"Warning: Image not found: {full_path}")
                 predictions.append('neutral')
@@ -86,53 +101,3 @@ def generate_submission():
 
 if __name__ == "__main__":
     generate_submission()
-
-#
-#
-#
-# import os
-# import pandas as pd
-# import numpy as np
-# import tensorflow as tf
-# from tensorflow.keras.preprocessing.image import load_img, img_to_array
-#
-# # Диагностика
-# print(f"TensorFlow version: {tf.__version__}")
-# print(f"NumPy version: {np.__version__}")
-#
-# # Константы
-# IMG_SIZE = (224, 224)  # Согласовать с train.py
-# TEST_DIR = '/Users/connors/PycharmProjects/emotion_detection/data/test'
-# MODEL_PATH = '/Users/connors/PycharmProjects/emotion_detection/models/resnet50_finetuned.h5'
-# CLASS_NAMES = ['neutral', 'anger', 'contempt', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'uncertain']
-#
-#
-# def generate_submission():
-#     try:
-#         model = tf.keras.models.load_model(MODEL_PATH)
-#         test_image_paths = [f"{i}.jpg" for i in range(5000)]
-#         predictions = []
-#
-#         for img_path in test_image_paths:
-#             full_path = os.path.join(TEST_DIR, img_path)
-#             if not os.path.exists(full_path):
-#                 print(f"Warning: Image not found: {full_path}")
-#                 predictions.append('neutral')
-#                 continue
-#             img = load_img(full_path, target_size=IMG_SIZE)
-#             img = img_to_array(img) / 255.0
-#             img = np.expand_dims(img, axis=0)
-#             pred = model.predict(img, verbose=0)
-#             emotion = CLASS_NAMES[np.argmax(pred)]
-#             predictions.append(emotion)
-#
-#         submission = pd.DataFrame({'image_path': test_image_paths, 'emotion': predictions})
-#         submission.to_csv('/Users/connors/PycharmProjects/emotion_detection/submission.csv', index=False)
-#         print("Submission file created: submission.csv")
-#     except Exception as e:
-#         print(f"Error in generate_submission: {e}")
-#         raise
-#
-#
-# if __name__ == "__main__":
-#     generate_submission()
