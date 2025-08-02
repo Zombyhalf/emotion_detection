@@ -13,6 +13,7 @@
 ├── models/
 │   ├── resnet50.h5           # Веса модели
 │   ├── resnet50_finetuned.h5 # Дообученная модель
+│   ├── resnet50_valence_arousal.h5 # Дообученная модель valence_arousal
 ├── scripts/
 │   ├── train.py              # Обучение модели
 │   ├── predict.py            # Генерация предсказаний
