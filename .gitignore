@@ -1,0 +1,42 @@
+# Директории с данными (слишком большие для GitHub)
+data/
+data/train/
+data/test/
+data/train.csv
+
+# Модели (большой размер, не загружаются)
+models/
+*.h5
+
+# Файлы предсказаний
+submission.csv
+
+# Временные файлы Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Виртуальная среда
+venv/
+.env/
+env/
+
+# IDE и редакторы
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+
+# macOS
+.DS_Store
+
+# Другие потенциальные временные файлы
+*.bak
+*.swp
+*~
