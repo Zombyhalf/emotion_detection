@@ -3,14 +3,27 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from scipy.spatial.distance import cdist
-
-# Диагностика
-print(f"TensorFlow version: {tf.__version__}")
-print(f"OpenCV version: {cv2.__version__}")
+"""
+Emotion Detection Webcam Prototype
+Цель: Детекция эмоций в реальном времени через веб-камеру с использованием ResNet50.
+Метрики:
+- Классификационная модель: val_accuracy=0.5115, стабильные предсказания.
+- Valence-Arousal: mapped_accuracy=0.3495, частые 'neutral' из-за маппинга.
+Эксперименты:
+1. Valence-Arousal модель:
+   - Результат: Частые предсказания 'neutral' (mapped_accuracy=0.3495).
+   - Вывод: Маппинг через cdist ограничивает качество.
+2. Классификационная модель:
+   - Результат: Более точные и стабильные предсказания (val_accuracy=0.5115).
+   - Вывод: Предпочтительна для прототипа.
+3. Предобработка:
+   - Замена деления на 255.0 на preprocess_input.
+   - Результат: Улучшение точности детекции.
+"""
 
 # Константы
-IMG_SIZE = (224, 224)
-MODEL_PATH = '/Users/connors/PycharmProjects/emotion_detection/models/resnet50_finetuned.h5'
+IMG_SIZE = (224, 224)  # Размер входного изображения (для ResNet50)
+MODEL_PATH = 'models/resnet50_finetuned.h5'  # Путь к модели, можно менять на resnet50_valence_arousal.h5
 CLASS_NAMES = ['neutral', 'anger', 'contempt', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'uncertain']
 VALENCE_AROUSAL = {
     'neutral': (0.0, 0.0), 'anger': (-0.7, 0.7), 'contempt': (-0.5, 0.3), 'disgust': (-0.6, 0.4), 'fear': (-0.4, 0.8),
@@ -18,7 +31,16 @@ VALENCE_AROUSAL = {
 }
 
 class EmotionDetector:
+    """
+    Класс для детекции эмоций на видео с веб-камеры.
+    """
     def __init__(self, model_path, class_names=CLASS_NAMES):
+        """
+        Инициализация модели и детектора лиц.
+        Args:
+            model_path: Путь к модели (классификационная или valence-arousal).
+            class_names: Список эмоций.
+        """
         try:
             self.model = tf.keras.models.load_model(model_path)
             self.class_names = class_names
@@ -32,6 +54,14 @@ class EmotionDetector:
             raise
 
     def preprocess_frame(self, frame):
+        """
+               Предобработка кадра: детекция лица, изменение размера, нормализация.
+               Args:
+                   frame: Входной кадр (BGR).
+               Returns:
+                   Кортеж (предобработанное изображение, координаты лица).
+               Эксперимент: preprocess_input заменил деление на 255.0 для согласованности с train.py.
+               """
         try:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
@@ -48,6 +78,13 @@ class EmotionDetector:
             return None, None
 
     def predict(self, frame):
+        """
+                Предсказание эмоции на кадре.
+                Args:
+                    frame: Входной кадр (BGR).
+                Returns:
+                    Кортеж (эмоция, координаты лица).
+                """
         processed_frame, bbox = self.preprocess_frame(frame)
         if processed_frame is None:
             return "No face detected", None
@@ -69,6 +106,13 @@ class EmotionDetector:
         return emotion, bbox
 
     def display_emotion(self, frame):
+        """
+                Отображение эмоции и рамки вокруг лица на кадре.
+                Args:
+                    frame: Входной кадр (BGR).
+                Returns:
+                    Кадр с рамкой и текстом эмоции.
+                """
         emotion, bbox = self.predict(frame)
         if bbox is not None:
             x, y, w, h = bbox
@@ -77,6 +121,10 @@ class EmotionDetector:
         return frame
 
 def run_webcam():
+    """
+        Запуск веб-камеры для детекции эмоций в реальном времени.
+        Нажмите 'q' для выхода.
+        """
     try:
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
